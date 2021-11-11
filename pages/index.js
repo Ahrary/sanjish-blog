@@ -1,9 +1,9 @@
 import React from "react";
 import Head from "next/head";
 
-import Blog from "../Layout/Blog"
+import Blog from "../Layout/Blog";
 
-const Index = () => {
+const Page = () => {
   return (
     <>
       <Head>
@@ -15,4 +15,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Page;
