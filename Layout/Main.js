@@ -10,15 +10,13 @@ import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import InputBase from "@mui/material/InputBase";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import Masonry from "@mui/lab/Masonry";
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -35,13 +33,24 @@ const Main = () => {
   const [error, setError] = React.useState(null);
   const [q, setQ] = React.useState("");
   const [searchParam] = React.useState("title");
-  const [filterParam, setFilterParam] = React.useState(["All"]);
-  const [open, setOpen] = React.useState(false);
+  const [toggle, setToggle] = React.useState(false);
+  const [ten, setTen] = React.useState(false);
+  const [twenty, setTwenty] = React.useState(false);
+  const [fifty, setFifty] = React.useState(false);
 
   const url = "https://jsonplaceholder.typicode.com/posts";
 
-  // temporary using random picture from unsplash
-  const postImage = "https://source.unsplash.com/random";
+  // temporary using first img
+  const postImage = "https://via.placeholder.com/150/92c952";
+
+  const {
+    handleChange,
+    handleClick,
+    handleTen,
+    handleTwenty,
+    handleFifty,
+    search,
+  } = filteringFunctions();
 
   React.useEffect(() => {
     axios(url)
@@ -55,24 +64,12 @@ const Main = () => {
       });
   }, []);
 
-  const search = (data) => {
-    const searchResult = data.filter((post) => {
-      return post[searchParam].toLowerCase().includes(q.toLowerCase());
-    });
-    return searchResult;
+  function ColorToggleButton() {
+    const [alignment, setAlignment] = React.useState('All');
   };
-
-  const handleChange = (e) => {
-    setQ(e.target.value);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
+    const handleToggleChange = (e, newAlignment) => {
+      setAlignment(newAlignment);
+    };
 
   return (
     <div>
@@ -99,28 +96,19 @@ const Main = () => {
 
         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
 
-        <FormControl sx={{ m: 1, minWidth: 120 }}>
-          <InputLabel id="filter-open-select-label">Filter</InputLabel>
-          <Select
-            labelId="filter-select-label"
-            id="filter-open-select"
-            open={open}
-            onClose={handleClose}
-            onOpen={handleOpen}
-            value={filterParam}
-            label="Filter"
-            onChange={(e) => {
-              setFilterParam(e.target.value);
-            }}
-          >
-            <MenuItem value="All">
-              <em>All</em>
-            </MenuItem>
-            <MenuItem value="10">10</MenuItem>
-            <MenuItem value="20">20</MenuItem>
-            <MenuItem value="50">50</MenuItem>
-          </Select>
-        </FormControl>
+ {/* Added the ability to filter by amount of posts (10, 20, 50) */}
+
+        <ToggleButtonGroup
+          color="primary"
+          value={ColorToggleButton.alignment}
+          exclusive
+          onChange={handleToggleChange}
+        >
+          <ToggleButton onClick={handleClick} value="All">All</ToggleButton>
+          <ToggleButton onClick={handleTen} value="10">10</ToggleButton>
+          <ToggleButton onClick={handleTwenty} value="20">20</ToggleButton>
+          <ToggleButton onClick={handleFifty} value="50">50</ToggleButton>
+        </ToggleButtonGroup>
       </Paper>
 
       {loading ? (
@@ -136,46 +124,106 @@ const Main = () => {
             defaultColumns={4}
             defaultSpacing={2}
           >
-            {search(data).map((post) => (
-              <Item key={post.id}>
-                <Card>
-                  <CardActionArea>
-                    <CardMedia
-                      component="img"
-                      alt="Contemplative Reptile"
-                      height="140"
-                      image={postImage}
-                      title="Contemplative Reptile"
-                    />
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="h2">
-                        {post.title}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                      >
-                        {post.body}
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                  <CardActions>
-                    <Button size="small" color="primary">
-                      Share
-                    </Button>
-                    <Button size="small" color="primary">
-                      Learn More
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Item>
-            ))}
+            {search(data)
+              .slice(0, ten ? 10 : twenty ? 20 : fifty ? 50 : 100)
+              .map(({ id, title, body, userId }) => (
+                <Item key={id}>
+                  <Card sx={{ dataUserId: `${userId}`, dataPostId: `${id}` }}>
+                    <CardActionArea>
+                        <CardMedia
+                          component="img"
+                          alt="The Alternative Text for Img"
+                          height="140"
+                          image={postImage}
+                          title="The Title of Img"
+                        />
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {title}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          component="p"
+                        >
+                          {body.length > 99
+                            ? body.substring(
+                                0,
+                                body.substring(0, 99 + 1).search(/\s+\S*$/)
+                              )
+                            : body}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                    <CardActions>
+                      <Button size="small" color="primary">
+                        Share
+                      </Button>
+                      <Button size="small" color="primary">
+                        Learn More
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Item>
+              ))}
           </Masonry>
         </div>
       )}
     </div>
   );
+
+  function filteringFunctions() {
+    const handleClick = (e) => {
+      e.preventDefault();
+      setToggle(!toggle);
+      setTen(false);
+      setTwenty(false);
+      setFifty(false);
+    };
+
+    const handleTen = (e) => {
+      e.preventDefault();
+      setTen(!ten);
+      setToggle(false);
+      setTwenty(false);
+      setFifty(false);
+    };
+
+    const handleTwenty = (e) => {
+      e.preventDefault();
+      setTwenty(!twenty);
+      setToggle(false);
+      setTen(false);
+      setFifty(false);
+    };
+
+    const handleFifty = (e) => {
+      e.preventDefault();
+      setFifty(!fifty);
+      setToggle(false);
+      setTen(false);
+      setTwenty(false);
+    };
+
+    const search = (data) => {
+      const searchResult = data.filter((post) => {
+        return post[searchParam].toLowerCase().includes(q.toLowerCase());
+      });
+      return searchResult;
+    };
+
+    const handleChange = (e) => {
+      setQ(e.target.value);
+    };
+    return {
+      handleChange,
+      handleClick,
+      handleTen,
+      handleTwenty,
+      handleFifty,
+      search,
+    };
+  }
 };
 
 export default Main;
