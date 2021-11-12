@@ -8,8 +8,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import TelegramIcon from "@mui/icons-material/Telegram";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Masonry from '@mui/lab/Masonry';
-import Typography from '@mui/material/Typography';
+import Typography from "@mui/material/Typography";
 
 import Header from "./Header";
 import MainFeaturedPost from "./MainFeaturedPost";
@@ -96,19 +95,10 @@ const Blog = () => {
               <FeaturedPost key={post.title} post={post} />
             ))}
           </Grid>
-            <Typography variant="h3" gutterBottom>
-              Blog Posts
-            </Typography>
-          <Masonry
-            columns={4}
-            spacing={2}
-            defaultHeight={450}
-            defaultColumns={4}
-            defaultSpacing={2}
-          >
-
-            <Main title="Blog Posts" />
-          </Masonry>
+          <Typography variant="h3" gutterBottom sx={{mt:6}}>
+            Blog Posts
+          </Typography>
+          <Main title="Blog Posts" />
         </main>
       </Container>
       <Footer
