@@ -15,8 +15,8 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import Masonry from "@mui/lab/Masonry";
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -27,49 +27,65 @@ const Item = styled(Paper)(({ theme }) => ({
   justifyContent: "center",
 }));
 
+const truncate = (str, max, suffix) =>
+  str.length < max
+    ? str
+    : `${str.substr(
+        0,
+        str.substr(0, max - suffix.length).lastIndexOf(" ")
+      )}${suffix}`;
+
+
 const Main = () => {
   const [data, setData] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const [q, setQ] = React.useState("");
   const [searchParam] = React.useState("title");
-  const [toggle, setToggle] = React.useState(false);
-  const [ten, setTen] = React.useState(false);
+  const [all, setAll] = React.useState(false);
+  const [ten, setTen] = React.useState(true);
   const [twenty, setTwenty] = React.useState(false);
   const [fifty, setFifty] = React.useState(false);
+  const [alignment, setAlignment] = React.useState("10");
+  const [showMore, setShowMore] = React.useState(false);
 
   const url = "https://jsonplaceholder.typicode.com/posts";
 
   // temporary using first img
-  const postImage = "https://via.placeholder.com/150/92c952";
+  const postImage =
+    "https://via.placeholder.com/728x140.webp?text=sanjish.blog";
+
+    React.useEffect(() => {
+      axios(url)
+        .then((res) => {
+          setData(res.data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError(err);
+          setLoading(false);
+        });
+    }, []);
+
+
+  const search = (data) => {
+    const searchResult = data.filter((post) => {
+      return post[searchParam].toLowerCase().includes(q.toLowerCase());
+    });
+    return searchResult;
+  };
+
+  const handleChange = (e) => {
+    setQ(e.target.value);
+  };
 
   const {
-    handleChange,
-    handleClick,
+    handleAll,
     handleTen,
     handleTwenty,
     handleFifty,
-    search,
+    handleToggleChange,
   } = filteringFunctions();
-
-  React.useEffect(() => {
-    axios(url)
-      .then((res) => {
-        setData(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err);
-        setLoading(false);
-      });
-  }, []);
-
-  function ColorToggleButton() {
-    const [alignment, setAlignment] = React.useState('All');
-  };
-    const handleToggleChange = (e, newAlignment) => {
-      setAlignment(newAlignment);
-    };
 
   return (
     <div>
@@ -96,18 +112,26 @@ const Main = () => {
 
         <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
 
- {/* Added the ability to filter by amount of posts (10, 20, 50) */}
+        {/* Added the ability to filter by amount of posts (10, 20, 50) */}
 
         <ToggleButtonGroup
           color="primary"
-          value={ColorToggleButton.alignment}
+          value={alignment}
           exclusive
           onChange={handleToggleChange}
         >
-          <ToggleButton onClick={handleClick} value="All">All</ToggleButton>
-          <ToggleButton onClick={handleTen} value="10">10</ToggleButton>
-          <ToggleButton onClick={handleTwenty} value="20">20</ToggleButton>
-          <ToggleButton onClick={handleFifty} value="50">50</ToggleButton>
+          <ToggleButton onClick={handleAll} value="All">
+            All
+          </ToggleButton>
+          <ToggleButton onClick={handleTen} value={10}>
+            10
+          </ToggleButton>
+          <ToggleButton onClick={handleTwenty} value={20}>
+            20
+          </ToggleButton>
+          <ToggleButton onClick={handleFifty} value={50}>
+            50
+          </ToggleButton>
         </ToggleButtonGroup>
       </Paper>
 
@@ -118,25 +142,26 @@ const Main = () => {
       ) : (
         <div>
           <Masonry
-            columns={4}
+            columns={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 5 }}
             spacing={2}
             defaultHeight={450}
             defaultColumns={4}
             defaultSpacing={2}
+            sx={{m:0, p:0}}
           >
             {search(data)
-              .slice(0, ten ? 10 : twenty ? 20 : fifty ? 50 : 100)
+              .slice(0, ten ? 10 : twenty ? 20 : fifty ? 50 : 100) // default is 10
               .map(({ id, title, body, userId }) => (
-                <Item key={id}>
-                  <Card sx={{ dataUserId: `${userId}`, dataPostId: `${id}` }}>
-                    <CardActionArea>
-                        <CardMedia
-                          component="img"
-                          alt="The Alternative Text for Img"
-                          height="140"
-                          image={postImage}
-                          title="The Title of Img"
-                        />
+                <Item key={id} data-user-id={userId} data-post-id={id}>
+                  <Card>
+                    <CardActionArea onClick={() => setShowMore(!showMore)}>
+                      <CardMedia
+                        component="img"
+                        alt="The Alternative Text for Img"
+                        height="140"
+                        image={postImage}
+                        title="The Title of Img"
+                      />
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="h2">
                           {title}
@@ -146,12 +171,7 @@ const Main = () => {
                           color="textSecondary"
                           component="p"
                         >
-                          {body.length > 99
-                            ? body.substring(
-                                0,
-                                body.substring(0, 99 + 1).search(/\s+\S*$/)
-                              )
-                            : body}
+                          {showMore ? body : truncate(body, 80, "...")}
                         </Typography>
                       </CardContent>
                     </CardActionArea>
@@ -159,8 +179,12 @@ const Main = () => {
                       <Button size="small" color="primary">
                         Share
                       </Button>
-                      <Button size="small" color="primary">
-                        Learn More
+                      <Button
+                        onClick={() => setShowMore(!showMore)}
+                        size="small"
+                        color="primary"
+                      >
+                        {showMore ? "Show less" : "Show more"}
                       </Button>
                     </CardActions>
                   </Card>
@@ -173,9 +197,9 @@ const Main = () => {
   );
 
   function filteringFunctions() {
-    const handleClick = (e) => {
+    const handleAll = (e) => {
       e.preventDefault();
-      setToggle(!toggle);
+      setAll(!all);
       setTen(false);
       setTwenty(false);
       setFifty(false);
@@ -184,7 +208,7 @@ const Main = () => {
     const handleTen = (e) => {
       e.preventDefault();
       setTen(!ten);
-      setToggle(false);
+      setAll(false);
       setTwenty(false);
       setFifty(false);
     };
@@ -192,7 +216,7 @@ const Main = () => {
     const handleTwenty = (e) => {
       e.preventDefault();
       setTwenty(!twenty);
-      setToggle(false);
+      setAll(false);
       setTen(false);
       setFifty(false);
     };
@@ -200,28 +224,21 @@ const Main = () => {
     const handleFifty = (e) => {
       e.preventDefault();
       setFifty(!fifty);
-      setToggle(false);
+      setAll(false);
       setTen(false);
       setTwenty(false);
     };
 
-    const search = (data) => {
-      const searchResult = data.filter((post) => {
-        return post[searchParam].toLowerCase().includes(q.toLowerCase());
-      });
-      return searchResult;
+    const handleToggleChange = (e) => {
+      setAlignment(e.target.value);
     };
 
-    const handleChange = (e) => {
-      setQ(e.target.value);
-    };
     return {
-      handleChange,
-      handleClick,
+      handleAll,
       handleTen,
       handleTwenty,
       handleFifty,
-      search,
+      handleToggleChange,
     };
   }
 };
