@@ -3,11 +3,11 @@ import PropTypes from "prop-types";
 
 import Image from "next/image";
 
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
-import Box from '@mui/material/Box';
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 
 function MainFeaturedPost(props) {
   const { post } = props;
@@ -65,9 +65,9 @@ function MainFeaturedPost(props) {
             <Typography variant="h5" color="inherit" paragraph>
               {post.description}
             </Typography>
-            <Link variant="subtitle1" href="#">
+            <Button variant="outlined" href="#">
               {post.linkText}
-            </Link>
+            </Button>
           </Box>
         </Grid>
       </Grid>
