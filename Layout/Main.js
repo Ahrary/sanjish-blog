@@ -166,7 +166,7 @@ const Main = () => {
                           >
                             <Image
                               src={postImage}
-                              width={300}
+                              width={400}
                               height={200}
                               objectFit="cover"
                             />
