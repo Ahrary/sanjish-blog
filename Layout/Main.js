@@ -2,6 +2,7 @@ import * as React from "react";
 import axios from "axios";
 
 import Image from "next/image";
+import Link from "next/link";
 
 import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
@@ -37,7 +38,6 @@ const truncate = (str, max, suffix) =>
         str.substr(0, max - suffix.length).lastIndexOf(" ")
       )}${suffix}`;
 
-
 const Main = () => {
   const [data, setData] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
@@ -51,24 +51,23 @@ const Main = () => {
   const [alignment, setAlignment] = React.useState("10");
   const [showMore, setShowMore] = React.useState(false);
 
-  const url = "https://jsonplaceholder.typicode.com/posts";
+  const apiUrl = "https://jsonplaceholder.typicode.com/posts";
 
   // temporary using first img
   const postImage =
     "https://via.placeholder.com/300x140.webp?text=sanjish.blog";
 
-    React.useEffect(() => {
-      axios(url)
-        .then((res) => {
-          setData(res.data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setError(err);
-          setLoading(false);
-        });
-    }, []);
-
+  React.useEffect(() => {
+    axios(apiUrl)
+      .then((res) => {
+        setData(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err);
+        setLoading(false);
+      });
+  }, []);
 
   const search = (data) => {
     const searchResult = data.filter((post) => {
@@ -149,38 +148,48 @@ const Main = () => {
             defaultHeight={450}
             defaultColumns={4}
             defaultSpacing={2}
-            sx={{m:0, p:0}}
+            sx={{ m: 0, p: 0 }}
           >
             {search(data)
               .slice(0, ten ? 10 : twenty ? 20 : fifty ? 50 : 100) // default is 10
               .map(({ id, title, body, userId }) => (
                 <Item key={id} data-user-id={userId} data-post-id={id}>
                   <Card>
-                    <CardActionArea onClick={() => setShowMore(!showMore)}>
-                      <CardMedia
-                        component="div"
-                        alt="The Alternative Text for Img"
-                        height="140"
-                        title="The Title of Img">
-                        <Image
-                          src={postImage}
-                          width={300}
-                          height={200}
-                          objectFit="cover"
-                        />
-                      </CardMedia>
-                      <CardContent>
-                        <Typography sx={{ textTransform: "capitalize" }} gutterBottom variant="h5" component="h2">
-                          {title}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          component="p"
-                        >
-                          {showMore ? body : truncate(body, 80, "...")}
-                        </Typography>
-                      </CardContent>
+                    <CardActionArea>
+                      <Link href="/post/[id]" as={`/post/${id}`}>
+                        <a style={{color: "#333", textDecoration: "none"}}>
+                          <CardMedia
+                            component="div"
+                            alt="The Alternative Text for Img"
+                            height="140"
+                            title="The Title of Img"
+                          >
+                            <Image
+                              src={postImage}
+                              width={300}
+                              height={200}
+                              objectFit="cover"
+                            />
+                          </CardMedia>
+                          <CardContent>
+                            <Typography
+                              sx={{ textTransform: "capitalize" }}
+                              gutterBottom
+                              variant="h5"
+                              component="h2"
+                            >
+                              {title}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              color="textSecondary"
+                              component="p"
+                            >
+                              {showMore ? body : truncate(body, 80, "...")}
+                            </Typography>
+                          </CardContent>
+                        </a>
+                      </Link>
                     </CardActionArea>
                     <CardActions>
                       <Button size="small" color="primary">
