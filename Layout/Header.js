@@ -1,11 +1,11 @@
 import * as React from "react";
 import PropTypes from "prop-types";
 
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
-import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
+import Typography from "@mui/material/Typography";
+import Link from "@mui/material/Link";
 
 function Header(props) {
   const { sections, title } = props;
@@ -21,7 +21,9 @@ function Header(props) {
           noWrap
           sx={{ flex: 1 }}
         >
-          {title}
+          <Link color="inherit" href="/" sx={{ textDecoration: "none" }}>
+            <b>{title}</b>
+          </Link>
         </Typography>
         <IconButton>
           <SearchIcon />
@@ -39,7 +41,7 @@ function Header(props) {
             key={section.title}
             variant="body2"
             href={section.url}
-            sx={{ p: 1, flexShrink: 0 }}
+            sx={{ p: 1, flexShrink: 0, textDecoration: "none" }}
           >
             {section.title}
           </Link>
