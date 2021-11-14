@@ -1,12 +1,14 @@
 import * as React from "react";
 import PropTypes from "prop-types";
 
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
+import Image from "next/image";
+
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
 
 function FeaturedPost(props) {
   const { post } = props;
@@ -30,11 +32,18 @@ function FeaturedPost(props) {
             </Typography>
           </CardContent>
           <CardMedia
-            component="img"
+            component="div"
             sx={{ width: 160, display: { xs: "none", sm: "block" } }}
-            image={post.image}
-            alt={post.imageLabel}
-          />
+          >
+            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+              <Image
+                src={post.image}
+                alt={post.imageLabel}
+                layout="fill"
+                objectFit="cover"
+              />
+            </div>
+          </CardMedia>
         </Card>
       </CardActionArea>
     </Grid>

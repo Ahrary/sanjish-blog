@@ -1,6 +1,8 @@
 import * as React from "react";
 import axios from "axios";
 
+import Image from "next/image";
+
 import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardMedia from "@mui/material/CardMedia";
@@ -53,7 +55,7 @@ const Main = () => {
 
   // temporary using first img
   const postImage =
-    "https://via.placeholder.com/728x140.webp?text=sanjish.blog";
+    "https://via.placeholder.com/300x140.webp?text=sanjish.blog";
 
     React.useEffect(() => {
       axios(url)
@@ -156,14 +158,19 @@ const Main = () => {
                   <Card>
                     <CardActionArea onClick={() => setShowMore(!showMore)}>
                       <CardMedia
-                        component="img"
+                        component="div"
                         alt="The Alternative Text for Img"
                         height="140"
-                        image={postImage}
-                        title="The Title of Img"
-                      />
+                        title="The Title of Img">
+                        <Image
+                          src={postImage}
+                          width={300}
+                          height={200}
+                          objectFit="cover"
+                        />
+                      </CardMedia>
                       <CardContent>
-                        <Typography gutterBottom variant="h5" component="h2">
+                        <Typography sx={{ textTransform: "capitalize" }} gutterBottom variant="h5" component="h2">
                           {title}
                         </Typography>
                         <Typography

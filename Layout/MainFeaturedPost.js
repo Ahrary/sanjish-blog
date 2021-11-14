@@ -1,6 +1,8 @@
 import * as React from "react";
 import PropTypes from "prop-types";
 
+import Image from "next/image";
+
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -25,10 +27,12 @@ function MainFeaturedPost(props) {
     >
       {/* Increase the priority of the hero background image */}
       {
-        <img
+        <Image
           style={{ display: "none" }}
           src={post.image}
           alt={post.imageText}
+          objectFit="cover"
+          layout="fill"
         />
       }
       <Box
